@@ -31,15 +31,20 @@ import torch
 
 from pytorch_lightning import _logger as log
 from pytorch_lightning.utilities import rank_zero_only
-from pytorch_lightning.utilities.cloud_io import get_filesystem
-from pytorch_lightning.utilities.distributed import rank_zero_warn
+
+from lightning.fabric.utilities.cloud_io import get_filesystem
+from lightning.fabric.utilities import rank_zero_info, rank_zero_warn
+
+# from pytorch_lightning.utilities.cloud_io import get_filesystem
+# from pytorch_lightning.utilities.distributed import rank_zero_warn
 from pytorch_lightning.utilities.exceptions import MisconfigurationException
 
+from lightning.pytorch.profilers.profiler import Profiler
 # PL checks whether the profiler used is a subclass of its BaseProfiler
-from pytorch_lightning.profiler import BaseProfiler
+# from pytorch_lightning.profiler import BaseProfiler
 
 
-class PassThroughProfiler(BaseProfiler):
+class PassThroughProfiler(Profiler):
     """
     This class should be used when you don't want the (small) overhead of profiling.
     The Trainer uses this class by default.
@@ -77,7 +82,7 @@ class PassThroughProfiler(BaseProfiler):
         return ""
 
 
-class SimpleProfiler(BaseProfiler):
+class SimpleProfiler(Profiler):
     """
     This profiler simply records the duration of actions (in seconds) and reports
     the mean duration of each action and the total time spent over the entire training run.
@@ -193,7 +198,7 @@ class SimpleProfiler(BaseProfiler):
             self.output_file.close()
 
 
-class AdvancedProfiler(BaseProfiler):
+class AdvancedProfiler(Profiler):
     """
     This profiler uses Python's cProfiler to record more detailed information about
     time spent in each function call recorded during a given action. The output is quite
@@ -280,7 +285,7 @@ class AdvancedProfiler(BaseProfiler):
             self.output_file.close()
 
 
-class PyTorchProfiler(BaseProfiler):
+class PyTorchProfiler(Profiler):
 
     PROFILED_FUNCTIONS = ("training_step_and_backward", "validation_step", "test_step")
     AVAILABLE_SORT_KEYS = (
