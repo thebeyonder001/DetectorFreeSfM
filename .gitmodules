@@ -6,4 +6,4 @@
 	url = https://github.com/ETH3D/multi-view-evaluation.git
 [submodule "third_party/Hierarchical_Localization"]
 	path = third_party/Hierarchical_Localization
-	url = https://github.com/hxy-123/Hierarchical_Localization.git
+	url = https://github.com/thebeyonder001/Hierarchical-Localization
