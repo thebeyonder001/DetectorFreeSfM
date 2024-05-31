@@ -9,7 +9,7 @@ kornia
 loguru
 h5py
 albumentations
-timm>=0.3.2
+timm
 hydra-core
 omegaconf
 wandb
