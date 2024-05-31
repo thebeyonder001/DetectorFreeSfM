@@ -99,7 +99,7 @@ def eval_dataset(cfg):
 
     dataset_base_dir = cfg.dataset_base_dir
     dataset_name = cfg.dataset_name
-
+    print("DATA DIR:   ",dataset_base_dir, "/", dataset_name)
     dataset_dir = osp.join(dataset_base_dir, dataset_name)
     scene_paths = [
         osp.join(dataset_dir, scene_name) for scene_name in os.listdir(dataset_dir)
