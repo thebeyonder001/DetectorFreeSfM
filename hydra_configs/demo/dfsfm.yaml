@@ -19,10 +19,10 @@ sub_ray_n_worker: 1
 verbose: False
 visualize: False
 
-dataset_base_dir: /your/absolute/path/to/DetectorFreeSfM/SfM_dataset # NOTE: please modify here!
+dataset_base_dir: SfM_dataset # NOTE: please modify here!
 dataset_name: example_dataset
 output_base_dir: SfM_metric_output
-exp_name: ''
+exp_name: ""
 
 use_prior_intrin: False
 method: DetectorFreeSfM
@@ -31,16 +31,16 @@ neuralsfm:
   # Method related:
   NEUSFM_enable_post_optimization: True
   triangulation_mode: False
-  NEUSFM_coarse_matcher: 'loftr_official'
-  NEUSFM_coarse_match_type: 'coarse_only'
+  NEUSFM_coarse_matcher: "loftr_official"
+  NEUSFM_coarse_match_type: "coarse_only"
   NEUSFM_refinement_chunk_size: 2000
   NEUSFM_coarse_match_round: null
   NEUSFM_coarse_match_thr: 0.2
-  NEUSFM_fine_match_type: 'multiview'
-  suffix: ''
+  NEUSFM_fine_match_type: "multiview"
+  suffix: ""
   NEUSFM_fine_match_model_path:
     - weight/multiview_matcher.ckpt
-  NEUSFM_fine_match_cfg_path: 
+  NEUSFM_fine_match_cfg_path:
     - hydra_training_configs/experiment/multiview_refinement_matching.yaml
 
   # Data related:
@@ -63,7 +63,7 @@ neuralsfm:
   refine_iter_n_times: 2
 
 colmap_cfg:
-  ImageReader_camera_mode: 'auto'
+  ImageReader_camera_mode: "auto"
   ImageReader_single_camera: False
   min_model_size: 3
   no_refine_intrinsics: False
