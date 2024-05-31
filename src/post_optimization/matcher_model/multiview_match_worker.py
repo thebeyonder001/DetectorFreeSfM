@@ -1,15 +1,16 @@
-import torch
-from torch.utils.data import DataLoader
-import pytorch_lightning as pl
 import numpy as np
+import pytorch_lightning as pl
 import ray
-from ray.actor import ActorHandle
-from tqdm import tqdm
-from omegaconf import OmegaConf
+import torch
 from loguru import logger
+from omegaconf import OmegaConf
+from ray.actor import ActorHandle
+from torch.utils.data import DataLoader
+from tqdm import tqdm
 
 from src.MultiviewMatcher.MultiviewMatcher import MultiviewMatcher
 from src.utils.data_io import dict_to_cuda
+
 from ..data_construct import MatchingMultiviewData
 
 
@@ -113,8 +114,8 @@ def matchWorker(colmap_dataset, matcher, subset_track_idxs=None, visualize=False
 
     multiview_matching_dataset = MatchingMultiviewData(colmap_dataset, dataset_cfgs, worker_split_idxs=subset_track_idxs)
     dataloader = DataLoader(multiview_matching_dataset, num_workers=4, pin_memory=True)
-    
-    matcher.cuda()
+    if torch.cuda.is_available():
+        matcher.cuda()
     results_list = []
     running_time = []
     query_updated_buffer = UpdatedQueryPts(multiview_matching_dataset.colmap_images)
