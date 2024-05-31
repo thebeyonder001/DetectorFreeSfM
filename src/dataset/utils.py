@@ -1,14 +1,15 @@
 import io
 import math
-import h5py
 from os import path as osp
-from loguru import logger
 
+import albumentations as A
 import cv2
-import torch
+import h5py
 import numpy as np
 import PIL
-import albumentations as A
+import torch
+from loguru import logger
+from PIL import Image
 
 
 def process_resize(w, h, resize, df=None, resize_no_larger_than=False):
@@ -167,8 +168,8 @@ def resize_image(image, size, interp):
             interp = cv2.INTER_LINEAR
         resized = cv2.resize(image, size, interpolation=interp)
     elif interp.startswith('pil_'):
-        interp = getattr(PIL.Image, interp[len('pil_'):].upper())
-        resized = PIL.Image.fromarray(image.astype(np.uint8))
+        interp = getattr(Image, interp[len('pil_'):].upper())
+        resized = Image.fromarray(image.astype(np.uint8))
         resized = resized.resize(size, resample=interp)
         resized = np.asarray(resized, dtype=image.dtype)
     else:
