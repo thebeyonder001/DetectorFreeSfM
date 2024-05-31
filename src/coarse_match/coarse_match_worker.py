@@ -125,7 +125,7 @@ def match_worker(subset_ids, image_lists, covis_pairs_out, cfgs, pba=None, verbo
             tqdm_disable = False
 
     # match all permutations
-    for data in tqdm(dataloader, disable=tqdm_disable):
+    for data in tqdm(dataloader, disable=False):#tqdm_disable):
         f_name0, f_name1 = data['pair_key'][0][0], data['pair_key'][1][0]
         data_c = {
             k: v.to("cuda" if torch.cuda.is_available() else "cpu") if isinstance(v, torch.Tensor) else v for k, v in data.items()
