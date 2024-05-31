@@ -81,5 +81,5 @@ def coarse_SfM_runner(
             single_camera=colmap_configs["ImageReader_single_camera"],
         )
 
-        triangulation.main(Path(colmap_output_path), Path(reference_sfm_model), Path(temp_images_path), Path(pair_path), Path(feature_out), Path(match_out), colmap_configs=colmap_configs, verbose=verbose)
+        triangulation.main(Path(colmap_output_path), Path(reference_sfm_model), Path(temp_images_path), Path(pair_path), Path(feature_out), Path(match_out), mapper_options=colmap_configs, verbose=verbose)
     rmtree(colmap_temp_path)
