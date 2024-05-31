@@ -19,7 +19,7 @@ sub_ray_n_worker: 1
 verbose: False
 visualize: False
 
-dataset_base_dir: SfM_dataset # NOTE: please modify here!
+dataset_base_dir: SfM_dataset
 dataset_name: example_dataset
 output_base_dir: SfM_metric_output
 exp_name: ""
