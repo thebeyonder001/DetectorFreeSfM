@@ -1,19 +1,20 @@
-import ray
 import os
-from loguru import logger
 
-from torch.utils.data import DataLoader
-import pytorch_lightning as pl
-import torch
 import numpy as np
+import pytorch_lightning as pl
+import ray
+import torch
+from loguru import logger
+from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from src.utils.misc import lower_config
-from src.utils.torch_utils import update_state_dict, STATE_DICT_MAPPER
+from src.utils.torch_utils import STATE_DICT_MAPPER, update_state_dict
 
-from .utils.merge_kpts import agg_groupby_2d
-from .utils.detector_wrapper import DetectorWrapper
 from ..dataset.coarse_matching_dataset import CoarseMatchingDataset
+from .utils.detector_wrapper import DetectorWrapper
+from .utils.merge_kpts import agg_groupby_2d
+
 
 def names_to_pair(name0, name1):
     return '_'.join((name0.replace('/', '-'), name1.replace('/', '-')))
@@ -24,8 +25,9 @@ def build_model(args):
     model_type = args['type']
     match_thr = args['match_thr']
     if args['matcher'] == "loftr_official":
+        from third_party.LoFTR.src.config.default import \
+            get_cfg_defaults as get_cfg_defaults_loftr
         from third_party.LoFTR.src.loftr.loftr import LoFTR
-        from third_party.LoFTR.src.config.default import get_cfg_defaults as get_cfg_defaults_loftr
 
         matcher_args = args['loftr_official']
         cfg = get_cfg_defaults_loftr()
@@ -43,8 +45,10 @@ def build_model(args):
         matcher.eval()
 
     elif args['matcher'] == 'aspanformer':
-        from third_party.aspantransformer.src.ASpanFormer.aspanformer import ASpanFormer
-        from third_party.aspantransformer.src.config.default import get_cfg_defaults as get_cfg_defaults_aspanformer
+        from third_party.aspantransformer.src.ASpanFormer.aspanformer import \
+            ASpanFormer
+        from third_party.aspantransformer.src.config.default import \
+            get_cfg_defaults as get_cfg_defaults_aspanformer
 
         matcher_args = args['aspanformer']
         config = get_cfg_defaults_aspanformer()
@@ -60,8 +64,9 @@ def build_model(args):
         matcher.eval()
 
     elif args['matcher'] == 'matchformer':
+        from third_party.MatchFormer.config.defaultmf import \
+            get_cfg_defaults as get_cfg_defaults_matchformer
         from third_party.MatchFormer.model.matchformer import Matchformer
-        from third_party.MatchFormer.config.defaultmf import get_cfg_defaults as get_cfg_defaults_matchformer
 
         matcher_args = args['matchformer']
         config = get_cfg_defaults_matchformer()
@@ -104,8 +109,9 @@ def match_worker(subset_ids, image_lists, covis_pairs_out, cfgs, pba=None, verbo
     """extract matches from part of the possible image pair permutations"""
     args = cfgs['matcher']
     detector, matcher = build_model(args['model'])
-    detector.cuda()
-    matcher.cuda()
+    if torch.cuda.is_available():
+        detector.cuda()
+        matcher.cuda()
     matches = {}
     # Build dataset:
     dataset = CoarseMatchingDataset(cfgs["data"], image_lists, covis_pairs_out, subset_ids)
@@ -122,7 +128,7 @@ def match_worker(subset_ids, image_lists, covis_pairs_out, cfgs, pba=None, verbo
     for data in tqdm(dataloader, disable=tqdm_disable):
         f_name0, f_name1 = data['pair_key'][0][0], data['pair_key'][1][0]
         data_c = {
-            k: v.cuda() if isinstance(v, torch.Tensor) else v for k, v in data.items()
+            k: v.to("cuda" if torch.cuda.is_available() else "cpu") if isinstance(v, torch.Tensor) else v for k, v in data.items()
         }
         mkpts0, mkpts1, mconfs = extract_matches(
             data_c,
